@@ -14,17 +14,22 @@ router = APIRouter(
 def create_user(user : schemas.UserCreate, db: Session = Depends(get_db)):
 
     # Check if user already exists
-    existing_user_email = db.query(models.User).filter(models.User.email == user.email.lower()).first()
+    existing_phone_no = db.query(models.User).filter(models.User.phone_no == user.phone_no).first()
 
-    if existing_user_email:
+    if existing_phone_no:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User already exists")
+    
+    country_code, number = utils.split_phone_number(user.phone_no)
+
+    if not country_code or not number:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid phone number")
 
     # hash the password
     hashed_password = utils.hash(user.password)
     user.password = hashed_password
-    user.email = user.email.lower()
+    user.phone_no = number
 
-    new_user = models.User(**user.dict())
+    new_user = models.User(country_code = country_code, **user.dict())
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

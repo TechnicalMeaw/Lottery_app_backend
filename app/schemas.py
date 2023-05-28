@@ -6,14 +6,14 @@ from typing import Optional
 # Create User Request Model
 class UserCreate(BaseModel):
     name: str
-    email: EmailStr
+    phone_no: str
     password: str
 
 # User login response model
 class UserOut(BaseModel):
     id: int
     name: str
-    email: EmailStr
+    phone_no: str
     created_at : datetime
 
     class Config:
@@ -21,7 +21,7 @@ class UserOut(BaseModel):
 
 # User login request model
 class UserLogin(BaseModel):
-    email : EmailStr
+    phone_no : str
     password : str
 
 # Token response model
@@ -66,10 +66,63 @@ class TransactionRequest(BaseModel):
 
 # For transaction verification request --- Admin Panel
 class VerifyTransactionRequest(BaseModel):
-    user_id : bool
+    user_id : int
     transaction_id : str
     in_app_transaction_id : int
     is_verified : bool
+
+
+#  Individualtransaction response
+class IndividualTransactionResponse(BaseModel):
+    id : int
+    amount : int
+    transction_id : str
+    isAdded : bool
+    transaction_medium : str
+    is_verified : bool
+    is_rejected_by_admin : bool
+    screenshot_url : str
+    created_at : datetime
+
+
+# All transaction response
+class Transaction(IndividualTransactionResponse):
+    user_id : int
+    user : UserOut
+
+    class Config:
+        orm_mode = True
+
+
+# Withdraw
+class WithdrawRequest(BaseModel):
+    phone_no : str
+    transaction_medium : str
+    amount : int
+
+class VerifyWithdrawRequest(BaseModel):
+    withdraw_id : int
+    is_verified : bool
+
+
+class WithdrawIndividualResponse(BaseModel):
+    id : int
+    amount : int
+    phone_no : str
+    transaction_medium : str
+    is_verified : bool
+    is_rejected_by_admin : bool
+    created_at : datetime
+
+
+class WithdrawResponse(WithdrawIndividualResponse):
+    user_id : int
+
+    user : UserOut
+
+    class Config:
+        orm_mode = True
+
 
 # Send Otp request
 class EmailSchema(BaseModel):
@@ -77,8 +130,7 @@ class EmailSchema(BaseModel):
 
 # verify Otp
 class OtpVerifyRequest(BaseModel):
-    email: EmailStr
-    otp: int
+    phone: str
 
 class ChangePasswordRequest(BaseModel):
     newPassword: str
@@ -87,10 +139,49 @@ class ChangePasswordRequest(BaseModel):
 class LotteryOutResponse(BaseModel):
     lottery_token: int
     is_winner : bool
+    user : UserOut
 
     class Config:
         orm_mode = True
 
 # Lottery Buy Response
-class LotteryBuyResponse(BaseModel):
-    lottery_entries : List[LotteryOutResponse]
+class BuyLotteryRequest(BaseModel):
+    amount: int
+
+
+class TimeLeftResponse(BaseModel):
+    time_left_in_millis : str
+
+    class Config:
+        orm_mode = True
+
+
+class LotteryWinner(BaseModel):
+    lottery_token_no : int
+    position : int
+
+    user : UserOut
+
+    class Config:
+        orm_mode = True
+
+
+class SetLotteryWinnerRequest(BaseModel):
+    token: int
+    rank: int
+
+class RemoveLotteryWinnerRequest(BaseModel):
+    token: int
+
+
+# Lottery Prize
+class LotteryPrize(BaseModel):
+    rank_no : int
+    prize_money : int
+
+    class Config:
+        orm_mode = True
+
+
+class LotteryPrizeDeleteRequest(BaseModel):
+    rank_no: int

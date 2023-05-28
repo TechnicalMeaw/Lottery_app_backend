@@ -2,6 +2,7 @@ from fastapi import status, HTTPException, Depends, APIRouter
 from .. import models, schemas, oauth2
 from ..database import get_db
 from sqlalchemy.orm import Session
+from typing import List, Optional
 
 router = APIRouter(
     prefix= "/transaction",
@@ -17,6 +18,7 @@ def transact(transactionData : schemas.TransactionRequest, db: Session = Depends
     
     new_transaction = models.Transactions(user_id = current_user.id, **transactionData.dict())
     db.add(new_transaction)
+    db.commit()
 
     return {"details": "Transaction added, need to be verified"}
 
@@ -63,3 +65,23 @@ def verify_transaction(verificationData: schemas.VerifyTransactionRequest, db: S
         return new_coin_balance
 
     
+@router.get("/all_transactions", response_model=List[schemas.Transaction])
+def get_all_transactions(pageNo : int = 1, search_transaction_id: Optional[str] = "", db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
+
+    user_entries = db.query(models.Transactions).filter(models.Transactions.transction_id.contains(search_transaction_id)).limit(10).offset((pageNo-1)*10).all()
+
+    if not user_entries:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "Transactions not found")
+    
+    return user_entries
+
+
+@router.get("/my_transactions", response_model=List[schemas.IndividualTransactionResponse])
+def get_all_transactions(pageNo : int = 1, search_transaction_id: Optional[str] = "", db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
+
+    user_entries = db.query(models.Transactions).filter(models.Transactions.user_id == current_user.id).filter(models.Transactions.transction_id.contains(search_transaction_id)).limit(10).offset((pageNo-1)*10).all()
+
+    if not user_entries:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "Transactions not found")
+    
+    return user_entries

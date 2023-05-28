@@ -11,7 +11,7 @@ router = APIRouter(tags=["Authentication"])
 
 @router.post("/login", response_model= schemas.Token)
 def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.email == user_credentials.username).first()
+    user = db.query(models.User).filter(models.User.phone_no == user_credentials.username).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Invalid Credentials")
     
@@ -27,46 +27,46 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session =
 
 
 
-@router.post("/send_otp")
-async def send_otp(email: schemas.EmailSchema, db: Session = Depends(get_db)):
-    otp = generateOtp()
+# @router.post("/send_otp")
+# async def send_otp(email: schemas.EmailSchema, db: Session = Depends(get_db)):
+#     otp = generateOtp()
 
-    prev_otp_entry = db.query(models.OTPs).filter(models.OTPs.user_email == email.email[0]).first()
+#     prev_otp_entry = db.query(models.OTPs).filter(models.OTPs.user_email == email.email[0]).first()
 
-    if not prev_otp_entry:
-        print(email.email[0])
-        new_otp = models.OTPs(user_email = email.email[0], otp = otp)
-        db.add(new_otp)
-        db.commit()
+#     if not prev_otp_entry:
+#         print(email.email[0])
+#         new_otp = models.OTPs(user_email = email.email[0], otp = otp)
+#         db.add(new_otp)
+#         db.commit()
 
-    else:
-        prev_otp_entry.otp = otp
-        db.commit()
+#     else:
+#         prev_otp_entry.otp = otp
+#         db.commit()
 
-    await sendOTP(email.email, otp)
-    return {"details": "OTP sent"}
+#     await sendOTP(email.email, otp)
+#     return {"details": "OTP sent"}
 
 
 @router.post("/verify_otp")
 def verify_otp(otpData: schemas.OtpVerifyRequest, db: Session = Depends(get_db)):
 
-    prev_otp_entry = db.query(models.OTPs).filter(models.OTPs.user_email == otpData.email).first()
+    # prev_otp_entry = db.query(models.OTPs).filter(models.OTPs.user_email == otpData.email).first()
 
-    # If otp not sent
-    if not prev_otp_entry:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="OTP was never sent to this email")
+    # # If otp not sent
+    # if not prev_otp_entry:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="OTP was never sent to this email")
     
-    # If otp expired
-    if datetime.strftime(prev_otp_entry.created_at + timedelta(minutes=5), "%d/%m/%y %H:%M:%S") < datetime.strftime(datetime.now(), "%d/%m/%y %H:%M:%S"):
-        raise HTTPException(status_code=status.HTTP_408_REQUEST_TIMEOUT, detail="OTP expired.")
+    # # If otp expired
+    # if datetime.strftime(prev_otp_entry.created_at + timedelta(minutes=5), "%d/%m/%y %H:%M:%S") < datetime.strftime(datetime.now(), "%d/%m/%y %H:%M:%S"):
+    #     raise HTTPException(status_code=status.HTTP_408_REQUEST_TIMEOUT, detail="OTP expired.")
     
-    user_entry = db.query(models.User).filter(models.User.email == otpData.email).first()
+    user_entry = db.query(models.User).filter(models.User.phone_no == otpData.phone).first()
 
-    if not user_entry:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User does not exist")
+    # if not user_entry:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User does not exist")
     
-    if int(prev_otp_entry.otp) != otpData.otp:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Otp does not match")
+    # if int(prev_otp_entry.otp) != otpData.otp:
+    #     raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Otp does not match")
 
     user_entry.is_verified = True
 
