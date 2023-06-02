@@ -11,7 +11,14 @@ router = APIRouter(tags=["Authentication"])
 
 @router.post("/login", response_model= schemas.Token)
 def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.phone_no == user_credentials.username).first()
+
+    if len(user_credentials.username)  < 11:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Invalid Credentials")
+    
+    country_code, number = utils.split_phone_number(user_credentials.username)
+
+    user = db.query(models.User).filter(models.User.phone_no == number).filter(models.User.country_code == country_code).first()
+
     if not user:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Invalid Credentials")
     
@@ -19,7 +26,7 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session =
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Invalid Credentials")
     
     if not user.is_verified:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="First verify your email")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="First verify your phone number")
     
     # create a token
     access_token = oauth2.create_access_token(data={"user_id": user.id})
