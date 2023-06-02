@@ -58,9 +58,7 @@ def get_coin_balance(db: Session = Depends(get_db), current_user : models.User =
     coin_balance = db.query(models.Coins).filter(models.Coins.user_id == current_user.id).first()
 
     if not coin_balance:
-        coins = schemas.CoinResponse()
-        coins.num_of_coins = 0
-        coins.coin_type = 1
+        coins = schemas.CoinResponse(num_of_coins=0, coin_type=0)
 
         return coins
     
