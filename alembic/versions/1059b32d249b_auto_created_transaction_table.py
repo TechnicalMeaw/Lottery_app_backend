@@ -31,7 +31,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('transction_id')
     )
-    op.add_column('users', sa.Column('is_verified', sa.Boolean(), server_default=sa.text('False'), nullable=False))
+    op.add_column('users', sa.Column('is_verified', sa.Boolean(), server_default=sa.text('True'), nullable=False))
     op.add_column('users', sa.Column('role', sa.Integer(), server_default=sa.text('1'), nullable=True))
     op.drop_constraint('users_id_fkey', 'users', type_='foreignkey')
     # ### end Alembic commands ###
