@@ -45,7 +45,7 @@ def delete_prev_lottery_data(db: Session):
 
 
 def split_phone_number(phone_number):
-    pattern = r'^\+(\d{1,3})(\d+)$'
+    pattern = r'^(\+\d{1,3})(\d{10}+)$'
     match = re.match(pattern, phone_number)
     if match:
         country_code = match.group(1)
