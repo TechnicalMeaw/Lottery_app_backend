@@ -84,6 +84,9 @@ class IndividualTransactionResponse(BaseModel):
     screenshot_url : str
     created_at : datetime
 
+    class Config:
+        orm_mode = True
+
 
 # All transaction response
 class Transaction(IndividualTransactionResponse):
