@@ -117,10 +117,12 @@ class WithdrawIndividualResponse(BaseModel):
     is_rejected_by_admin : bool
     created_at : datetime
 
+    class Config:
+        orm_mode = True
+
 
 class WithdrawResponse(WithdrawIndividualResponse):
     user_id : int
-
     user : UserOut
 
     class Config:
