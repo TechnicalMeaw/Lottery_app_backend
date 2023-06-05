@@ -3,6 +3,8 @@ from .. import models, schemas, oauth2
 from ..database import get_db
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from sqlalchemy.sql.expression import cast
+from sqlalchemy import String
 
 
 router = APIRouter(
@@ -60,21 +62,21 @@ def verify_withdraw(verificationData: schemas.VerifyWithdrawRequest, db: Session
 @router.get("/all_requests", response_model=List[schemas.WithdrawResponse])
 def get_all_transactions(page_no : int = 1, search_withdraw_request_id: Optional[str] = "", db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
 
-    user_entries = db.query(models.Withdrawals).filter(models.Withdrawals.id.contains(search_withdraw_request_id)).limit(10).offset((page_no-1)*10).all()
+    user_entries = db.query(models.Withdrawals).filter(cast(models.Withdrawals.id, String).contains(search_withdraw_request_id)).limit(10).offset((page_no-1)*10).all()
 
     if not user_entries:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "Transactions not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "No withdraw requests has been made")
     
     return user_entries
 
 
 
 @router.get("/my_requests", response_model=List[schemas.WithdrawIndividualResponse])
-def get_all_transactions(page_no : int = 1, search_withdraw_request_id: Optional[str] = "", db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
+def get_all_transactions(page_no : int = 1, search_withdraw_request_id: Optional[int] = "", db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
 
-    user_entries = db.query(models.Withdrawals).filter(models.Withdrawals.user_id == current_user.id).filter(models.Withdrawals.id.contains(search_withdraw_request_id)).limit(10).offset((page_no-1)*10).all()
+    user_entries = db.query(models.Withdrawals).filter(models.Withdrawals.user_id == current_user.id).filter(cast(models.Withdrawals.id, String).contains(search_withdraw_request_id)).limit(10).offset((page_no-1)*10).all()
 
     if not user_entries:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "Transactions not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "No withdraw requests has been made")
     
     return user_entries
