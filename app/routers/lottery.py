@@ -3,6 +3,8 @@ from fastapi import status, HTTPException, Depends, APIRouter
 from .. import models, schemas, utils, oauth2
 from ..database import get_db
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.expression import cast
+from sqlalchemy import String
 
 router = APIRouter(
     prefix= "/lottery",
@@ -37,16 +39,34 @@ def buy_lottery(lotteryBuyData : schemas.BuyLotteryRequest, db: Session = Depend
     return user_entries
 
 
+# Get All Entries
+
 @router.get("/participants", response_model=List[schemas.LotteryOutResponse])
 def get_all_participants(db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user), 
                          pageNo : int = 1, search: Optional[str] = ""):
     
-    user_entries = db.query(models.Lottery).filter(models.Lottery.lottery_token.contains(search)).limit(10).offset((pageNo-1)*10).all()
+    user_entries = db.query(models.Lottery).filter(cast(models.Lottery.lottery_token, String).contains(search)).limit(10).offset((pageNo-1)*10).all()
 
     if not user_entries or len(user_entries) == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Entries not found")
 
     return user_entries
+
+
+
+# Get My Tickets
+
+@router.get("/get_all_my_entries", response_model=List[schemas.LotteryOutResponse])
+def get_my_entries(db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user), search: Optional[str] = ""):
+    
+    user_entries = db.query(models.Lottery).filter(models.Lottery.user_id == current_user.id).filter(cast(models.Lottery.lottery_token, String).contains(search)).all()
+
+    if not user_entries or len(user_entries) == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No entries found")
+
+    return user_entries
+
+
 
 @router.get("/get_time_left_in_millis", response_model= schemas.TimeLeftResponse)
 def get_time_left_in_millis(db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
@@ -62,8 +82,6 @@ def get_time_left_in_millis(db: Session = Depends(get_db), current_user : models
 @router.get("/get_all_winners", response_model=List[schemas.LotteryWinner])
 def get_all_winners(db: Session = Depends(get_db)):
     all_winners = db.query(models.LotteryWinners).all()
-
-
 
     return all_winners
 
@@ -170,7 +188,7 @@ def modify_lottery_prize_pool(prizeData: schemas.LotteryPrize, db: Session = Dep
     return allPrize
 
 
-@router.get("/delete_lottery_prizepool", response_model=List[schemas.LotteryPrize])
+@router.post("/delete_lottery_prizepool", response_model=List[schemas.LotteryPrize])
 def delete_lottery_prizepool(prizeData : schemas.LotteryPrizeDeleteRequest, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
     prev_entry = db.query(models.LotteryPrize).filter(models.LotteryPrize.rank_no == prizeData.rank_no).first()
 
