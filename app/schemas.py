@@ -19,6 +19,14 @@ class UserOut(BaseModel):
     class Config:
         orm_mode = True
 
+
+class UserOutWithCoin(BaseModel):
+    User : UserOut
+    coins : Optional[int]
+
+    class Config:
+        orm_mode = True
+
 # User login request model
 class UserLogin(BaseModel):
     phone_no : str
@@ -138,6 +146,7 @@ class OtpVerifyRequest(BaseModel):
     phone: str
 
 class ChangePasswordRequest(BaseModel):
+    phone_no : str
     newPassword: str
 
 
