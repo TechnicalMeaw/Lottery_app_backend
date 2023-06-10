@@ -41,7 +41,7 @@ def verify_transaction(verificationData: schemas.VerifyTransactionRequest, db: S
         if not user_coin_balance:
             new_coin_balance = schemas.CoinResponse(num_of_coins=transaction.amount, coin_type=1)
             new_coins_row = models.Coins(**new_coin_balance.dict())
-            new_coins_row.user_id = current_user.id
+            new_coins_row.user_id = transaction.user_id
             db.add(new_coins_row)
             db.commit()
             return new_coin_balance
@@ -60,7 +60,7 @@ def verify_transaction(verificationData: schemas.VerifyTransactionRequest, db: S
         # Get coin balance
         new_coin_balance = schemas.CoinResponse(num_of_coins=transaction.amount, coin_type=1)
         new_coins_row = models.Coins(**new_coin_balance.dict())
-        new_coins_row.user_id = current_user.id
+        new_coins_row.user_id = transaction.user_id
 
         return new_coin_balance
 
