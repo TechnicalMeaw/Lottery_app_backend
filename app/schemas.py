@@ -161,6 +161,7 @@ class LotteryOutResponse(BaseModel):
 # Lottery Buy Response
 class BuyLotteryRequest(BaseModel):
     amount: int
+    timeZoneOffsetFromUtc : Optional[int]
 
 
 class TimeLeftResponse(BaseModel):

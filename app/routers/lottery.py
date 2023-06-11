@@ -14,8 +14,12 @@ router = APIRouter(
 @router.post("/buy", response_model=List[schemas.LotteryOutResponse])
 def buy_lottery(lotteryBuyData : schemas.BuyLotteryRequest, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
     
-    if not utils.is_lottery_active():
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Lottery buying time is over")
+    if lotteryBuyData.timeZoneOffsetFromUtc != None:
+        if not utils.is_lottery_active(lotteryBuyData.timeZoneOffsetFromUtc):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Lottery buying time is over")
+    else:
+        if not utils.is_lottery_active():
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Lottery buying time is over")
     
     utils.delete_prev_lottery_data(db)
 
