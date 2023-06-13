@@ -14,6 +14,19 @@ class User(Base):
     is_verified = Column(Boolean, nullable = False, server_default = TextClause("True"))
     role = Column(Integer, server_default = TextClause("1"))
     country_code = Column(String)
+    refferal = Column(String, nullable = False, server_default=TextClause("gen_random_uuid()"))
+    
+
+class Refferals(Base):
+    __tablename__ = "refferals"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    refferal_user_id = Column(Integer)
+    reffered_user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    amount = Column(Integer, nullable = False, server_default = TextClause("10"))
+    is_success = Column(Boolean, nullable = False, server_default = TextClause("True"))
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))
+
+    user = relationship("User")
 
 
 class Coins(Base):

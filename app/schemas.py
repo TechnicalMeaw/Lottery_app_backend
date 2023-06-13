@@ -8,6 +8,7 @@ class UserCreate(BaseModel):
     name: str
     phone_no: str
     password: str
+    refferal : Optional[str]
 
 # User login response model
 class UserOut(BaseModel):
@@ -15,6 +16,13 @@ class UserOut(BaseModel):
     name: str
     phone_no: str
     created_at : datetime
+
+    class Config:
+        orm_mode = True
+
+
+class UserOutWithRefferal(UserOut):
+    refferal : str
 
     class Config:
         orm_mode = True
@@ -200,3 +208,15 @@ class LotteryPrize(BaseModel):
 
 class LotteryPrizeDeleteRequest(BaseModel):
     rank_no: int
+
+
+# Refferal response
+class RefferalResponse(BaseModel):
+    User : UserOut
+    reffered_user_id : int
+    amount : int
+    is_success : bool
+    created_at : datetime
+
+    class Config:
+        orm_mode = True

@@ -36,6 +36,30 @@ def create_user(user : schemas.UserCreate, db: Session = Depends(get_db)):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+
+    if user.refferal != None> 1:
+        refferal_user = db.query(models.User).filter(models.User.refferal == user.refferal).first()
+        
+        if refferal_user:
+
+            # Update coin balance
+            coin_balance_query = db.query(models.Coins).filter(models.Coins.user_id == refferal_user.id)
+
+            user_coin_balance = coin_balance_query.first()
+
+            if not user_coin_balance:
+                new_coin_balance = schemas.CoinResponse(num_of_coins=10, coin_type=1)
+                new_coins_row = models.Coins(**new_coin_balance.dict())
+                new_coins_row.user_id = refferal_user.id
+                db.add(new_coins_row)            
+
+            user_coin_balance.num_of_coins += 10
+
+            # Update new entry to refferal table
+            new_refferal_entry = models.Refferals(refferal_user_id = refferal_user.id, reffered_user_id = new_user.id, amount = 10)
+            db.add(new_refferal_entry)
+            db.commit()
+
     return new_user
 
 
@@ -51,7 +75,7 @@ def get_all_users(page_no : int = 1, search_phone_number: Optional[str] = "", db
     return all_users
 
 
-@router.get("/", response_model= schemas.UserOut)
+@router.get("/", response_model= schemas.UserOutWithRefferal)
 def get_current_user(db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
     user = db.query(models.User).filter(models.User.id == current_user.id).first()
 
