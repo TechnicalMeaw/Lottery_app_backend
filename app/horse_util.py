@@ -10,13 +10,13 @@ from sqlalchemy import func
 def get_lottery_time_left_in_millis():
     now = datetime.now()
 
-    if now.minute == 0 or (now.minute == 0 and now.second < 30):
+    if now.minute == 0 or (now.minute == 1 and now.second < 30):
         current_match_end_time = datetime(now.year, now.month, now.day, now.hour, 1, 30)
 
         # Time remaining to end the match
         time_remaining = (current_match_end_time - now).total_seconds() * 1000
 
-        return schemas.HorseMatchTiming(True, time_remaining)
+        return schemas.HorseMatchTiming(is_horse_bidding_slot_open = True, remaining_time_in_millis = time_remaining)
 
     else:
         next_hour = now.hour + 1
@@ -70,7 +70,7 @@ def calculate_winning_horse(db: Session):
 def delete_prev_slot_entries(db: Session):
     now = datetime.now()
 
-    db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day, now.hour, 0, 0)).delete()
+    db.query(models.HorseRaceBids).filter(models.HorseRaceBids.created_at < datetime(now.year, now.month, now.day, now.hour, 0, 0)).delete()
 
     db.commit()
    
