@@ -15,7 +15,7 @@ class User(Base):
     role = Column(Integer, server_default = TextClause("1"))
     country_code = Column(String)
     refferal = Column(String, nullable = False, server_default=TextClause("gen_random_uuid()"))
-    
+
 
 class Refferals(Base):
     __tablename__ = "refferals"
@@ -99,3 +99,12 @@ class Withdrawals(Base):
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))
 
     user = relationship("User")
+
+class HorseRaceBids(Base):
+    __tablename__ = "horse_race_bids"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable = False)
+    horse_id = Column(Integer, nullable=False)
+    bid_amount = Column(Integer, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))

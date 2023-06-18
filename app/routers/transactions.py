@@ -9,7 +9,7 @@ router = APIRouter(
     tags=["Transaction"]
 )
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.HTTPError)
 def transact(transactionData : schemas.TransactionRequest, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
     prevTransactionOnSameId = db.query(models.Transactions).filter(models.Transactions.user_id == current_user.id, models.Transactions.transction_id == transactionData.transction_id).first()
 
@@ -23,7 +23,7 @@ def transact(transactionData : schemas.TransactionRequest, db: Session = Depends
     return {"details": "Transaction added, need to be verified"}
 
 
-@router.post("/verify")
+@router.post("/verify", response_model=schemas.HTTPError)
 def verify_transaction(verificationData: schemas.VerifyTransactionRequest, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
     transaction = db.query(models.Transactions).filter(models.Transactions.user_id == verificationData.user_id).filter(models.Transactions.transction_id == verificationData.transaction_id).filter(models.Transactions.id == verificationData.in_app_transaction_id).first()
 

@@ -12,7 +12,7 @@ router = APIRouter(
     tags=["Withdrawals"]
 )
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.HTTPError)
 def withdraw(withdrawRequest : schemas.WithdrawRequest, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
     
     coin_balance = db.query(models.Coins).filter(current_user.id == models.Coins.user_id).first()
@@ -31,7 +31,7 @@ def withdraw(withdrawRequest : schemas.WithdrawRequest, db: Session = Depends(ge
     return {"details": "Withdraw request added, please wait until processed"}
 
 
-@router.post("/verify")
+@router.post("/verify", response_model=schemas.HTTPError)
 def verify_withdraw(verificationData: schemas.VerifyWithdrawRequest, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
 
     withdraw_request = db.query(models.Withdrawals).filter(models.Withdrawals.id == verificationData.withdraw_id).first()

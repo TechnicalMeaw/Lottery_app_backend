@@ -56,7 +56,7 @@ class HTTPError(BaseModel):
 
     class Config:
         schema_extra = {
-            "example": {"detail": "HTTPException string"},
+            "example": {"detail": "HTTPException string / Success string"},
         }
 
 # Model for coin updation request
@@ -220,3 +220,31 @@ class RefferalResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class HorseMatchTiming(BaseModel):
+
+    is_horse_bidding_slot_open : bool
+    remaining_time_in_millis : int
+
+
+class HorseRaceWinnerResponseModel(BaseModel):
+    bid_amount : Optional[int]
+
+    class Config:
+        orm_mode = True
+
+class HorseRaceWinnerDetailsResponseModel(BaseModel):
+    winnig_horse_id : int
+    is_user_winner : bool
+    total_bid_money : int
+    bid_on_winning_horse : int = 0
+    win_money : int = 0
+
+    class Config:
+        orm_mode = True
+
+
+class HorseRaceBidRequestModel(BaseModel):
+    bid_horse_id : int
+    bid_amount : int

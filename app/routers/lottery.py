@@ -26,10 +26,10 @@ def buy_lottery(lotteryBuyData : schemas.BuyLotteryRequest, db: Session = Depend
     coin_balance = db.query(models.Coins).filter(current_user.id == models.Coins.user_id).first()
 
     if not coin_balance:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Coin Balance is not enough")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Coin balance is not enough")
     
     if int(coin_balance.num_of_coins) < lotteryBuyData.amount:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Coin Balance is not enough")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Coin balance is not enough")
 
     lottery_entry = models.Lottery(user_id = current_user.id, lottery_coin_price = lotteryBuyData.amount)
     
