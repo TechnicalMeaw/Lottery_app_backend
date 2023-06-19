@@ -70,7 +70,7 @@ def calculate_winning_horse(db: Session):
 def delete_prev_slot_entries(db: Session):
     now = datetime.now()
 
-    db.query(models.HorseRaceBids).filter(models.HorseRaceBids.created_at < datetime(now.year, now.month, now.day, now.hour, 0, 0)).delete()
+    db.query(models.HorseRaceBids).filter(models.HorseRaceBids.created_at < datetime(now.year, now.month, now.day, now.hour, 0, 0)).delete(synchronize_session=False)
 
     db.commit()
    

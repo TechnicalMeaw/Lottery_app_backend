@@ -248,3 +248,21 @@ class HorseRaceWinnerDetailsResponseModel(BaseModel):
 class HorseRaceBidRequestModel(BaseModel):
     bid_horse_id : int
     bid_amount : int
+
+
+# Request Model
+class AddTransactionMediumRequestModel(BaseModel):
+    medium_title : str
+
+#  Response Model
+class TransactionMedium(BaseModel):
+    id : int
+    medium_title : str
+    created_at : datetime
+
+    class Config:
+        orm_mode = True
+
+# Delete Request Model
+class DeleteTransactionMediumRequestModel(BaseModel):
+    id : int

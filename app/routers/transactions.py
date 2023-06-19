@@ -85,3 +85,34 @@ def get_all_transactions(pageNo : int = 1, search_transaction_id: Optional[str] 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "Transactions not found")
     
     return user_entries
+
+
+@router.get("/get_all_transaction_mediums", response_model=List[schemas.TransactionMedium])
+def get_all_transaction_mediums(db: Session = Depends(get_db)):
+    all_mediums = db.query(models.TransactionMedium).all()
+
+    return all_mediums
+
+@router.post("/add_transaction_medium", response_model = schemas.HTTPError, status_code = status.HTTP_201_CREATED)
+def add_transaction_medium(transactionMediumData : schemas.AddTransactionMediumRequestModel, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
+    new_entry = models.TransactionMedium(created_by = current_user.id, **transactionMediumData.dict())
+    db.add(new_entry)
+    db.commit()
+    return {"detail": "Successfully added medium"}
+
+
+@router.post("/delete_transaction_medium", response_model= schemas.HTTPError)
+def delete_transaction_medium(deleteData : schemas.DeleteTransactionMediumRequestModel, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
+    prev_entry_query = db.query(models.TransactionMedium).filter(models.TransactionMedium.id == deleteData.id, models.TransactionMedium.created_by == current_user.id)
+    prev_entry = prev_entry_query.first()
+
+    if not prev_entry:
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail="Medium not found")
+    
+    prev_entry_query.delete(synchronize_session=False)
+    db.commit()
+
+    return {"detail": "Successfully deleted medium"}
+
+    
+    

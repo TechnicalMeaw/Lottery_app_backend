@@ -108,3 +108,13 @@ class HorseRaceBids(Base):
     horse_id = Column(Integer, nullable=False)
     bid_amount = Column(Integer, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))
+
+
+class TransactionMedium(Base):
+
+    __tablename__ = "transaction_mediums"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    medium_title = Column(String, nullable=False)
+    created_by = Column(Integer, ForeignKey("users.id"), nullable = False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))
