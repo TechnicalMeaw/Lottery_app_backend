@@ -47,7 +47,7 @@ def calculate_winning_horse(db: Session):
 
     horse_min_bid_amount = 0
 
-    for id in range(1,4):
+    for id in range(1,7):
 
         horse_bid_anount = db.query(func.sum(models.HorseRaceBids.bid_amount).label("bid_amount")).filter(models.HorseRaceBids.horse_id == id).first()
 
