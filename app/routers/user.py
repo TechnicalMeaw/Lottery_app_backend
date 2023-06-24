@@ -16,13 +16,15 @@ router = APIRouter(
                         status.HTTP_403_FORBIDDEN : {"model": schemas.HTTPError,"description": "If user already exists"}})
 def create_user(user : schemas.UserCreate, db: Session = Depends(get_db)):
 
+    
+    
+    country_code, number = utils.split_phone_number(user.phone_no)
+
     # Check if user already exists
-    existing_phone_no = db.query(models.User).filter(models.User.phone_no == user.phone_no).first()
+    existing_phone_no = db.query(models.User).filter(models.User.phone_no == number, models.User.country_code == country_code).first()
 
     if existing_phone_no:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User already exists")
-    
-    country_code, number = utils.split_phone_number(user.phone_no)
 
     if not country_code or not number:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid phone number")
@@ -32,12 +34,12 @@ def create_user(user : schemas.UserCreate, db: Session = Depends(get_db)):
     user.password = hashed_password
     user.phone_no = number
 
-    new_user = models.User(country_code = country_code, **user.dict())
+    new_user = models.User(country_code = country_code, name = user.name, phone_no = user.phone_no, password = user.password)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
 
-    if user.refferal != None> 1:
+    if user.refferal != None and len(user.refferal) > 1:
         refferal_user = db.query(models.User).filter(models.User.refferal == user.refferal).first()
         
         if refferal_user:
