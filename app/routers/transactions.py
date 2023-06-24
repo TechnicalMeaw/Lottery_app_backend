@@ -20,10 +20,10 @@ def transact(transactionData : schemas.TransactionRequest, db: Session = Depends
     db.add(new_transaction)
     db.commit()
 
-    return {"details": "Transaction added, need to be verified"}
+    return {"detail": "Transaction added, need to be verified"}
 
 
-@router.post("/verify", response_model=schemas.HTTPError)
+@router.post("/verify")
 def verify_transaction(verificationData: schemas.VerifyTransactionRequest, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
     transaction = db.query(models.Transactions).filter(models.Transactions.user_id == verificationData.user_id).filter(models.Transactions.transction_id == verificationData.transaction_id).filter(models.Transactions.id == verificationData.in_app_transaction_id).first()
 

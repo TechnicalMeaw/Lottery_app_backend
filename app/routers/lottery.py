@@ -17,11 +17,12 @@ def buy_lottery(lotteryBuyData : schemas.BuyLotteryRequest, db: Session = Depend
     if lotteryBuyData.timeZoneOffsetFromUtc != None:
         if not utils.is_lottery_active(lotteryBuyData.timeZoneOffsetFromUtc):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Lottery buying time is over")
+        utils.delete_prev_lottery_data(db, lotteryBuyData.timeZoneOffsetFromUtc)
     else:
         if not utils.is_lottery_active():
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Lottery buying time is over")
+        utils.delete_prev_lottery_data(db, 0)
     
-    utils.delete_prev_lottery_data(db)
 
     coin_balance = db.query(models.Coins).filter(current_user.id == models.Coins.user_id).first()
 
@@ -100,7 +101,7 @@ def set_winner(winnerData : schemas.SetLotteryWinnerRequest, db: Session = Depen
     lottery_participate = db.query(models.Lottery).filter(models.Lottery.lottery_token == winnerData.token).first()
 
     if not lottery_participate:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="lottery number does not exist")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lottery number does not exist")
     
     prev_winner_entry = db.query(models.LotteryWinners).filter(models.LotteryWinners.user_id == lottery_participate.user_id).first()
 

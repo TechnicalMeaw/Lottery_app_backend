@@ -28,10 +28,10 @@ def withdraw(withdrawRequest : schemas.WithdrawRequest, db: Session = Depends(ge
     coin_balance.num_of_coins -= withdrawRequest.amount
     db.commit()
 
-    return {"details": "Withdraw request added, please wait until processed"}
+    return {"detail": "Withdraw request added, please wait until processed"}
 
 
-@router.post("/verify", response_model=schemas.HTTPError)
+@router.post("/verify")
 def verify_withdraw(verificationData: schemas.VerifyWithdrawRequest, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
 
     withdraw_request = db.query(models.Withdrawals).filter(models.Withdrawals.id == verificationData.withdraw_id).first()
