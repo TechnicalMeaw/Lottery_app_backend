@@ -39,7 +39,27 @@ def is_lottery_active(timeZoneOffset):
 
 def delete_prev_lottery_data(db: Session, timeZoneOffset):
     now = datetime.now()
-    db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day, 10, 0, 0) - timeZoneOffset).delete(synchronize_session=False)
+
+    totalSeconds = timeZoneOffset // 1000
+    totalMin = totalSeconds // 60
+
+    totalHrsToDeduct = totalMin // 60
+    totalMinToDeduct = totalMin % 60
+    totalSecondsToDeduct = totalSeconds % 60
+
+    actualMin = 0
+    actualSec = 0
+
+    if totalSecondsToDeduct > 0:
+        totalMinToDeduct += 1
+        actualSec = 60 - totalSecondsToDeduct
+
+    if totalMinToDeduct > 0:
+        totalHrsToDeduct += 1
+        actualMin = 60 - totalMinToDeduct
+
+    
+    db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day, 10 - totalHrsToDeduct, actualMin, actualSec).utcfromtimestamp(timeZoneOffset) ).delete(synchronize_session=False)
 
     db.commit()
 
