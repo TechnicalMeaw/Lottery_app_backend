@@ -10,8 +10,12 @@ from sqlalchemy import func
 def get_lottery_time_left_in_millis():
     now = datetime.now()
 
-    if now.minute == 0 or (now.minute == 1 and now.second < 30):
-        current_match_end_time = datetime(now.year, now.month, now.day, now.hour, 1, 30)
+    if now.minute % 5 == 0 or (now.minute % 5 == 1 and now.second < 30):
+        current_match_end_time = datetime(now.year, now.month, now.day, now.hour, now.minute+1, 30)
+
+        if now.minute % 5 == 1:
+            current_match_end_time = datetime(now.year, now.month, now.day, now.hour, now.minute, 30)
+        
 
         # Time remaining to end the match
         time_remaining = (current_match_end_time - now).total_seconds() * 1000
@@ -19,12 +23,21 @@ def get_lottery_time_left_in_millis():
         return schemas.HorseMatchTiming(is_horse_bidding_slot_open = True, remaining_time_in_millis = time_remaining)
 
     else:
-        next_hour = now.hour + 1
 
-        if next_hour == 24:
-            next_hour = 0
+        total_slots_since_hour = now.minute // 5
 
-        next_hour_time = datetime(now.year, now.month, now.day, next_hour, 0, 0)
+        next_slot_minutes = (total_slots_since_hour + 1) * 5
+        next_slot_hour = now.hour
+
+        if next_slot_minutes == 60:
+            next_slot_minutes = 0
+            next_slot_hour += 1 
+        
+
+        if next_slot_hour == 24:
+            next_slot_hour = 0
+
+        next_hour_time = datetime(now.year, now.month, now.day, next_slot_hour, next_slot_minutes, 0)
 
         # Time remaining for next match
         time_difference = (next_hour_time - now).total_seconds() * 1000
