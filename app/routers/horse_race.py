@@ -16,6 +16,9 @@ router = APIRouter(
 @router.get("/get_slot_details", response_model=schemas.HorseMatchTiming)
 def get_slot_details(db: Session = Depends(get_db)):
     slot = horse_util.get_lottery_time_left_in_millis()
+    if slot.is_horse_bidding_slot_open:
+        # Delete prev slot entries
+        horse_util.delete_prev_slot_entries(db)
     return slot
 
 

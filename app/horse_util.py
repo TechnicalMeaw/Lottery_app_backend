@@ -86,17 +86,9 @@ def delete_prev_slot_entries(db: Session):
     total_slots_since_hour = now.minute // 5
 
     prev_slot_minutes = total_slots_since_hour * 5
-    prev_slot_hour = now.hour
-
-    if prev_slot_minutes == 60:
-        prev_slot_minutes = 0
-        prev_slot_hour -= 1 
         
 
-    if prev_slot_hour == -1:
-        prev_slot_hour = 0
-
-    db.query(models.HorseRaceBids).filter(models.HorseRaceBids.created_at < datetime(now.year, now.month, now.day, prev_slot_hour, prev_slot_minutes, 0)).delete(synchronize_session=False)
+    db.query(models.HorseRaceBids).filter(models.HorseRaceBids.created_at < datetime(now.year, now.month, now.day, now.hour, prev_slot_minutes, 0)).delete(synchronize_session=False)
 
     db.commit()
    
