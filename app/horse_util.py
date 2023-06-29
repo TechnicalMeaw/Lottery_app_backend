@@ -56,28 +56,31 @@ def is_bidding_allowed():
 
 def calculate_winning_horse(db: Session):
 
-    winning_horse = -1
+    horse_bids = db.query(models.HorseRaceBids.horse_id, func.sum(models.HorseRaceBids.bid_amount).label("bid_amount")).group_by(models.HorseRaceBids).order_by("bid_amount").all()
 
-    horse_min_bid_amount = 0
+    # winning_horse = -1
 
-    for id in range(1,7):
+    # horse_min_bid_amount = 0
 
-        horse_bid_anount = db.query(func.sum(models.HorseRaceBids.bid_amount).label("bid_amount")).filter(models.HorseRaceBids.horse_id == id).first()
+    # for id in range(1,7):
 
-        if not horse_bid_anount or not horse_bid_anount.bid_amount:
-            horse_bid_anount = 0
-        else:
-            horse_bid_anount = horse_bid_anount.bid_amount
+    #     horse_bid_anount = db.query(func.sum(models.HorseRaceBids.bid_amount).label("bid_amount")).filter(models.HorseRaceBids.horse_id == id).first()
+
+    #     if not horse_bid_anount or not horse_bid_anount.bid_amount:
+    #         horse_bid_anount = 0
+    #     else:
+    #         horse_bid_anount = horse_bid_anount.bid_amount
         
 
-        if id == 1:
-            horse_min_bid_amount = horse_bid_anount
-            winning_horse = id
-        elif horse_bid_anount < horse_min_bid_amount:
-                horse_min_bid_amount = horse_bid_anount
-                winning_horse = id
+    #     if id == 1:
+    #         horse_min_bid_amount = horse_bid_anount
+    #         winning_horse = id
+    #     elif horse_bid_anount < horse_min_bid_amount:
+    #             horse_min_bid_amount = horse_bid_anount
+    #             winning_horse = id
 
-    return winning_horse
+    # return winning_horse
+    return horse_bids[0][0]
 
 
 def delete_prev_slot_entries(db: Session):

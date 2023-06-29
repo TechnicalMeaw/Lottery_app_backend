@@ -4,8 +4,8 @@ from .. import models, schemas, oauth2, horse_util
 from ..database import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-import requests
 from .coins import update_coin
+from typing import List
 
 router = APIRouter(
     prefix= "/horse",
@@ -86,3 +86,10 @@ def get_result_details(db: Session = Depends(get_db), current_user : models.User
         db.commit()
 
     return response
+
+
+@router.get("/get_my_bids", response_model = List[schemas.HorseRaceMyBidsResponseModel])
+def get_my_bids(db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
+    my_bids = db.query(models.HorseRaceBids.horse_id.label("horse_id"), func.sum(models.HorseRaceBids.bid_amount).label("bid_amount")).filter(models.User.id == current_user.id).group_by(models.HorseRaceBids).order_by(models.HorseRaceBids.horse_id).all()
+
+    return my_bids

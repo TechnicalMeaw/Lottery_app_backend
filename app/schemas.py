@@ -250,6 +250,14 @@ class HorseRaceBidRequestModel(BaseModel):
     bid_amount : int
 
 
+class HorseRaceMyBidsResponseModel(BaseModel):
+    horse_id : int
+    bid_amount : int
+
+    class Config:
+        orm_mode = True
+
+
 # Request Model
 class AddTransactionMediumRequestModel(BaseModel):
     medium_title : str
