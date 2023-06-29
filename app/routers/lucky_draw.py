@@ -15,7 +15,7 @@ def get_all_coin_values(db: Session = Depends(get_db)):
 
     return all_coins
 
-@router.post("modify_coin_value")
+@router.post("/modify_coin_value")
 def modify_coin_value(coinData : schemas.ModifyLuckyDrawCoinRequestModel, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
     prev_coin = db.query(models.LuckyDrawCoinValues).filter(models.LuckyDrawCoinValues.id == coinData.id).first()
 

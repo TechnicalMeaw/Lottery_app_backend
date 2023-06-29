@@ -90,6 +90,12 @@ def get_result_details(db: Session = Depends(get_db), current_user : models.User
 
 @router.get("/get_my_bids", response_model = List[schemas.HorseRaceMyBidsResponseModel])
 def get_my_bids(db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
+
+    slot = horse_util.get_lottery_time_left_in_millis()
+
+    if not slot.is_horse_bidding_slot_open:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You have no active bids")
+
     my_bids = db.query(models.HorseRaceBids.horse_id.label("horse_id"), func.sum(models.HorseRaceBids.bid_amount).label("bid_amount")).filter(models.User.id == current_user.id).group_by(models.HorseRaceBids).order_by(models.HorseRaceBids.horse_id).all()
 
     return my_bids
