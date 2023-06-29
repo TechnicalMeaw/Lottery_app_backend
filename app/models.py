@@ -118,3 +118,12 @@ class TransactionMedium(Base):
     medium_title = Column(String, nullable=False)
     created_by = Column(Integer, ForeignKey("users.id"), nullable = False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))
+
+
+class LuckyDrawCoinValues(Base):
+    __tablename__ = "lucky_draw_coin_values"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    coin_value = Column(Integer, nullable=False)
+    created_by = Column(Integer, ForeignKey("users.id"), nullable = False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))

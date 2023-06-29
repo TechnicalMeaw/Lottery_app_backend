@@ -59,7 +59,7 @@ def delete_prev_lottery_data(db: Session, timeZoneOffset):
         actualMin = 60 - totalMinToDeduct
 
     
-    db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day, 10 - totalHrsToDeduct, actualMin, actualSec).utcfromtimestamp(timeZoneOffset) ).delete(synchronize_session=False)
+    db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day, 10 - totalHrsToDeduct, actualMin, actualSec)).delete(synchronize_session=False)
 
     db.commit()
 

@@ -77,7 +77,7 @@ def get_result_details(db: Session = Depends(get_db), current_user : models.User
     else:
         response.is_user_winner = True
         response.bid_on_winning_horse = bid_on_winning_horse.bid_amount
-        response.win_money = bid_on_winning_horse.bid_amount * 10
+        response.win_money = bid_on_winning_horse.bid_amount * 6
         # Add coin balance
         update_coin(schemas.CoinUpdateRequest(coins=response.win_money, updation_type="add"), db, current_user)
 

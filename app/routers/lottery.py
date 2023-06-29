@@ -32,11 +32,14 @@ def buy_lottery(lotteryBuyData : schemas.BuyLotteryRequest, db: Session = Depend
     if int(coin_balance.num_of_coins) < lotteryBuyData.amount:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Coin balance is not enough")
 
-    lottery_entry = models.Lottery(user_id = current_user.id, lottery_coin_price = lotteryBuyData.amount)
-    
-    db.add(lottery_entry)
-    coin_balance.num_of_coins -= lotteryBuyData.amount
+    num_of_tickets = lotteryBuyData.amount//20
 
+    for _ in range(num_of_tickets):
+        lottery_entry = models.Lottery(user_id = current_user.id, lottery_coin_price = 20)
+    
+        db.add(lottery_entry)
+        coin_balance.num_of_coins -= 20
+    
     db.commit()
 
     user_entries = db.query(models.Lottery).filter(models.Lottery.user_id == current_user.id).all()
@@ -64,7 +67,7 @@ def get_all_participants(db: Session = Depends(get_db), current_user : models.Us
 @router.get("/get_all_my_entries", response_model=List[schemas.LotteryOutResponse])
 def get_my_entries(db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user), search: Optional[str] = ""):
     
-    user_entries = db.query(models.Lottery).filter(models.Lottery.user_id == current_user.id).filter(cast(models.Lottery.lottery_token, String).contains(search)).all()
+    user_entries = db.query(models.Lottery).filter(models.Lottery.user_id == current_user.id).filter(cast(models.Lottery.lottery_token, String).contains(search)).order_by(0 - models.Lottery.lottery_token).all()
 
     if not user_entries or len(user_entries) == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No entries found")

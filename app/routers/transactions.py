@@ -68,7 +68,7 @@ def verify_transaction(verificationData: schemas.VerifyTransactionRequest, db: S
 @router.get("/all_transactions", response_model=List[schemas.Transaction])
 def get_all_transactions(pageNo : int = 1, search_transaction_id: Optional[str] = "", db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
 
-    user_entries = db.query(models.Transactions).filter(models.Transactions.transction_id.contains(search_transaction_id)).limit(10).offset((pageNo-1)*10).all()
+    user_entries = db.query(models.Transactions).filter(models.Transactions.transction_id.contains(search_transaction_id)).order_by(0-models.Transactions.id).limit(10).offset((pageNo-1)*10).all()
 
     if not user_entries:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "Transactions not found")
@@ -79,7 +79,7 @@ def get_all_transactions(pageNo : int = 1, search_transaction_id: Optional[str] 
 @router.get("/my_transactions", response_model=List[schemas.IndividualTransactionResponse])
 def get_all_transactions(pageNo : int = 1, search_transaction_id: Optional[str] = "", db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
 
-    user_entries = db.query(models.Transactions).filter(models.Transactions.user_id == current_user.id).filter(models.Transactions.transction_id.contains(search_transaction_id)).limit(10).offset((pageNo-1)*10).all()
+    user_entries = db.query(models.Transactions).filter(models.Transactions.user_id == current_user.id).filter(models.Transactions.transction_id.contains(search_transaction_id)).order_by(0-models.Transactions.id).limit(10).offset((pageNo-1)*10).all()
 
     if not user_entries:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "Transactions not found")

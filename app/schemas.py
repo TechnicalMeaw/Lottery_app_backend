@@ -266,3 +266,18 @@ class TransactionMedium(BaseModel):
 # Delete Request Model
 class DeleteTransactionMediumRequestModel(BaseModel):
     id : int
+
+
+#  Response Model
+class LuckyDrawCoinValues(BaseModel):
+    id : int
+    coin_value : int
+    created_at : datetime
+
+    class Config:
+        orm_mode = True
+
+# Modify Request Model
+class ModifyLuckyDrawCoinRequestModel(BaseModel):
+    id : int
+    coin_value : int

@@ -57,12 +57,11 @@ def verify_withdraw(verificationData: schemas.VerifyWithdrawRequest, db: Session
     return {"details": "Withdraw request sucessfully processed"}
 
 
-    
 
 @router.get("/all_requests", response_model=List[schemas.WithdrawResponse])
 def get_all_transactions(page_no : int = 1, search_withdraw_request_id: Optional[str] = "", db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
 
-    user_entries = db.query(models.Withdrawals).filter(cast(models.Withdrawals.id, String).contains(search_withdraw_request_id)).limit(10).offset((page_no-1)*10).all()
+    user_entries = db.query(models.Withdrawals).filter(cast(models.Withdrawals.id, String).contains(search_withdraw_request_id)).order_by(0-models.Withdrawals.id).limit(10).offset((page_no-1)*10).all()
 
     if not user_entries:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "No withdraw requests has been made")
@@ -74,7 +73,7 @@ def get_all_transactions(page_no : int = 1, search_withdraw_request_id: Optional
 @router.get("/my_requests", response_model=List[schemas.WithdrawIndividualResponse])
 def get_all_transactions(page_no : int = 1, search_withdraw_request_id: Optional[str] = "", db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
 
-    user_entries = db.query(models.Withdrawals).filter(models.Withdrawals.user_id == current_user.id).filter(cast(models.Withdrawals.id, String).contains(search_withdraw_request_id)).limit(10).offset((page_no-1)*10).all()
+    user_entries = db.query(models.Withdrawals).filter(models.Withdrawals.user_id == current_user.id).filter(cast(models.Withdrawals.id, String).contains(search_withdraw_request_id)).order_by(0-models.Withdrawals.id).limit(10).offset((page_no-1)*10).all()
 
     if not user_entries:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "No withdraw requests has been made")
