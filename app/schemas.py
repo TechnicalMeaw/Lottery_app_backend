@@ -289,3 +289,7 @@ class LuckyDrawCoinValues(BaseModel):
 class ModifyLuckyDrawCoinRequestModel(BaseModel):
     id : int
     coin_value : int
+
+
+class LotteryNoticeRequestResponseModel(BaseModel):
+    notice_text : str

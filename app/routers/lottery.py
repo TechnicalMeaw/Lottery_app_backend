@@ -208,3 +208,27 @@ def delete_lottery_prizepool(prizeData : schemas.LotteryPrizeDeleteRequest, db: 
 
     allPrize = db.query(models.LotteryPrize).all()
     return allPrize
+
+
+@router.get("/get_lottery_notice", response_model= schemas.LotteryNoticeRequestResponseModel)
+def get_lottery_notice(db: Session = Depends(get_db)):
+    notice = db.query(models.LotteryNoticeBoard).first()
+
+    if not notice:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No notice found")
+    
+    return notice
+
+
+@router.post("/modify_lottery_notice", response_model=schemas.HTTPError)
+def modify_lottery_notice(noticeData : schemas.LotteryNoticeRequestResponseModel, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
+    notice = db.query(models.LotteryNoticeBoard).first()
+
+    if not notice:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No notice found")
+    
+    notice.notice_text = noticeData.notice_text
+
+    db.commit()
+
+    return {"detail" : "Notice updated"}

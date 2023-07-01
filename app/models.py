@@ -127,3 +127,10 @@ class LuckyDrawCoinValues(Base):
     coin_value = Column(Integer, nullable=False)
     created_by = Column(Integer, ForeignKey("users.id"), nullable = False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))
+
+class LotteryNoticeBoard(Base):
+    __tablename__ = "lottery_notice"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    notice_text = Column(String, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))
