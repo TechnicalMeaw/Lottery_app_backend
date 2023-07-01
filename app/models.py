@@ -81,7 +81,7 @@ class LotteryPrize(Base):
 
 class LotteryWinners(Base):
     __tablename__ = "lottery_winners"
-    lottery_token_no = Column(Integer, primary_key= True, unique = True, nullable=False)
+    lottery_token_no = Column(Integer, ForeignKey("lottery.lottery_token", ondelete="CASCADE", name="lottery_winner_token_lottery_fkey"), primary_key= True, unique = True, nullable=False)
     position = Column(Integer, ForeignKey("lottery_prize.rank_no", ondelete="CASCADE"), unique = True, nullable=False)
     user_id =  Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable = False, unique = True)
 
