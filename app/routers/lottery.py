@@ -55,7 +55,7 @@ def buy_lottery(lotteryBuyData : schemas.BuyLotteryRequest, db: Session = Depend
 def get_all_participants(db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user), 
                          pageNo : int = 1, search: Optional[str] = ""):
     
-    user_entries = db.query(models.Lottery).filter(cast(models.Lottery.lottery_token, String).contains(search)).limit(10).offset((pageNo-1)*10).all()
+    user_entries = db.query(models.Lottery).filter(cast(models.Lottery.lottery_token, String).contains(search)).order_by(models.Lottery.lottery_token).limit(10).offset((pageNo-1)*10).all()
 
     if not user_entries or len(user_entries) == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Entries not found")
@@ -91,7 +91,7 @@ def get_time_left_in_millis(db: Session = Depends(get_db), current_user : models
 
 @router.get("/get_all_winners", response_model=List[schemas.LotteryWinner])
 def get_all_winners(db: Session = Depends(get_db)):
-    all_winners = db.query(models.LotteryWinners).all()
+    all_winners = db.query(models.LotteryWinners).order_by(0 - models.LotteryWinners.lottery_token_no).all()
 
     return all_winners
 
