@@ -14,14 +14,16 @@ router = APIRouter(
 @router.post("/buy", response_model=List[schemas.LotteryOutResponse])
 def buy_lottery(lotteryBuyData : schemas.BuyLotteryRequest, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
     
-    if lotteryBuyData.timeZoneOffsetFromUtc != None:
-        if not utils.is_lottery_active(lotteryBuyData.timeZoneOffsetFromUtc):
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Lottery buying time is over")
-        utils.delete_prev_lottery_data(db, lotteryBuyData.timeZoneOffsetFromUtc)
-    else:
-        if not utils.is_lottery_active():
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Lottery buying time is over")
-        utils.delete_prev_lottery_data(db, 0)
+    # if lotteryBuyData.timeZoneOffsetFromUtc != None:
+    #     if not utils.is_lottery_active(lotteryBuyData.timeZoneOffsetFromUtc):
+    #         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Lottery buying time is over")
+    #     utils.delete_prev_lottery_data(db, lotteryBuyData.timeZoneOffsetFromUtc)
+    # else:
+
+    if not utils.is_lottery_active(0):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Lottery buying time is over")
+    
+    utils.delete_prev_lottery_data(db, 0)
     
 
     coin_balance = db.query(models.Coins).filter(current_user.id == models.Coins.user_id).first()
@@ -106,10 +108,10 @@ def set_winner(winnerData : schemas.SetLotteryWinnerRequest, db: Session = Depen
     if not lottery_participate:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lottery number does not exist")
     
-    prev_winner_entry = db.query(models.LotteryWinners).filter(models.LotteryWinners.user_id == lottery_participate.user_id).first()
+    # prev_winner_entry = db.query(models.LotteryWinners).filter(models.LotteryWinners.user_id == lottery_participate.user_id).first()
 
-    if prev_winner_entry:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="This user is already in the winners list")
+    # if prev_winner_entry:
+    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="This user is already in the winners list")
 
     newWinner = models.LotteryWinners(lottery_token_no = winnerData.token, user_id = lottery_participate.user_id, position = winnerData.rank)
     db.add(newWinner)

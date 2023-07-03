@@ -10,7 +10,7 @@ from sqlalchemy import func
 def get_lottery_time_left_in_millis():
     now = datetime.now()
 
-    if now.minute % 5 == 0 or (now.minute % 5 == 1 and now.second < 30):
+    if now.minute % 2 == 0 or (now.minute % 2 == 1 and now.second < 30):
         current_match_end_time = datetime(now.year, now.month, now.day, now.hour, now.minute+1, 30)
 
         if now.minute % 5 == 1:
@@ -24,9 +24,9 @@ def get_lottery_time_left_in_millis():
 
     else:
 
-        total_slots_since_hour = now.minute // 5
+        total_slots_since_hour = now.minute // 2
 
-        next_slot_minutes = (total_slots_since_hour + 1) * 5
+        next_slot_minutes = (total_slots_since_hour + 1) * 2
         next_slot_hour = now.hour
 
         if next_slot_minutes == 60:
@@ -86,9 +86,9 @@ def calculate_winning_horse(db: Session):
 def delete_prev_slot_entries(db: Session):
     now = datetime.now()
 
-    total_slots_since_hour = now.minute // 5
+    total_slots_since_hour = now.minute // 2
 
-    prev_slot_minutes = total_slots_since_hour * 5
+    prev_slot_minutes = total_slots_since_hour * 2
         
 
     db.query(models.HorseRaceBids).filter(models.HorseRaceBids.created_at < datetime(now.year, now.month, now.day, now.hour, prev_slot_minutes, 0)).delete(synchronize_session=False)

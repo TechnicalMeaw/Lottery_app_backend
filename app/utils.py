@@ -17,7 +17,7 @@ def verify(plain_password, hashed_password):
 
 def get_lottery_time_left_in_millis():
     now = datetime.now()
-    nine_pm = datetime(now.year, now.month, now.day, 21, 0, 0)  # Set the time to 9 PM
+    nine_pm = datetime(now.year, now.month, now.day, 2, 55, 0)  # Set the time to 9 PM
 
     # Calculate the time difference in milliseconds
     time_difference = (nine_pm - now).total_seconds() * 1000
@@ -28,7 +28,7 @@ def get_lottery_time_left_in_millis():
 def is_lottery_active(timeZoneOffset):
 
     now = datetime.now()
-    nine_pm = datetime(now.year, now.month, now.day, 10, 0, 0)  # Set the time to 9 PM
+    nine_pm = datetime(now.year, now.month, now.day, 10 + 6, 30, 0)  # Set the time to 9 PM
 
     # Calculate the time difference in milliseconds
     time_difference = (nine_pm - now).total_seconds() * 1000 - timeZoneOffset
@@ -40,26 +40,28 @@ def is_lottery_active(timeZoneOffset):
 def delete_prev_lottery_data(db: Session, timeZoneOffset):
     now = datetime.now()
 
-    totalSeconds = timeZoneOffset // 1000
-    totalMin = totalSeconds // 60
+    # totalSeconds = timeZoneOffset // 1000
+    # totalMin = totalSeconds // 60
 
-    totalHrsToDeduct = totalMin // 60
-    totalMinToDeduct = totalMin % 60
-    totalSecondsToDeduct = totalSeconds % 60
+    # totalHrsToDeduct = totalMin // 60
+    # totalMinToDeduct = totalMin % 60
+    # totalSecondsToDeduct = totalSeconds % 60
 
-    actualMin = 0
-    actualSec = 0
+    # actualMin = 0
+    # actualSec = 0
 
-    if totalSecondsToDeduct > 0:
-        totalMinToDeduct += 1
-        actualSec = 60 - totalSecondsToDeduct
+    # if totalSecondsToDeduct > 0:
+    #     totalMinToDeduct += 1
+    #     actualSec = 60 - totalSecondsToDeduct
 
-    if totalMinToDeduct > 0:
-        totalHrsToDeduct += 1
-        actualMin = 60 - totalMinToDeduct
+    # if totalMinToDeduct > 0:
+    #     totalHrsToDeduct += 1
+    #     actualMin = 60 - totalMinToDeduct
 
     
-    db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day, 10 - totalHrsToDeduct, actualMin, actualSec)).delete(synchronize_session=False)
+    # db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day, 10 - totalHrsToDeduct, actualMin, actualSec)).delete(synchronize_session=False)
+
+    db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day, 10 + 6, 30, 0)).delete(synchronize_session=False)
 
     db.commit()
 
