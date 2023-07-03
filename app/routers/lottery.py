@@ -91,7 +91,7 @@ def get_time_left_in_millis(db: Session = Depends(get_db), current_user : models
 
 @router.get("/get_all_winners", response_model=List[schemas.LotteryWinner])
 def get_all_winners(db: Session = Depends(get_db)):
-    all_winners = db.query(models.LotteryWinners).order_by(0 - models.LotteryWinners.lottery_token_no).all()
+    all_winners = db.query(models.LotteryWinners).order_by(0 - models.LotteryWinners.position).all()
 
     return all_winners
 
