@@ -17,7 +17,7 @@ def verify(plain_password, hashed_password):
 
 def get_lottery_time_left_in_millis():
     now = datetime.now()
-    nine_pm = datetime(now.year, now.month, now.day+1, 3, 55, 0)  # Set the time to 9 PM
+    nine_pm = datetime(now.year, now.month, now.day, 15, 55, 0)  # Set the time to 9 PM
 
     # Calculate the time difference in milliseconds
     time_difference = (nine_pm - now).total_seconds() * 1000
