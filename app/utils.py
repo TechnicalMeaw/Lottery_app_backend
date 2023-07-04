@@ -28,7 +28,7 @@ def get_lottery_time_left_in_millis():
 def is_lottery_active(timeZoneOffset):
 
     now = datetime.now()
-    nine_pm = datetime(now.year, now.month, now.day-1, 18, 0, 0)  # Set the time to 12 AM
+    nine_pm = datetime(now.year, now.month, now.day, 18, 0, 0)  # Set the time to 12 AM
 
     # Calculate the time difference in milliseconds
     time_difference = (nine_pm - now).total_seconds() * 1000
@@ -62,7 +62,7 @@ def delete_prev_lottery_data(db: Session, timeZoneOffset):
     
     # db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day, 10 - totalHrsToDeduct, actualMin, actualSec)).delete(synchronize_session=False)
 
-    db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day-1, 18, 0, 0)).delete(synchronize_session=False)
+    db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day, 18, 0, 0)).delete(synchronize_session=False)
 
     db.commit()
 
@@ -70,7 +70,7 @@ def delete_prev_lottery_data(db: Session, timeZoneOffset):
 def delete_prev_winner(db: Session):
     now = datetime.now()
 
-    db.query(models.LotteryWinners).filter(models.LotteryWinners.created_at < datetime(now.year, now.month, now.day-1, 18, 0, 0)).delete(synchronize_session=False)
+    db.query(models.LotteryWinners).filter(models.LotteryWinners.created_at < datetime(now.year, now.month, now.day, 18, 0, 0)).delete(synchronize_session=False)
 
     db.commit() 
 
