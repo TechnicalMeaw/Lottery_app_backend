@@ -31,8 +31,8 @@ def is_lottery_active(timeZoneOffset):
     nine_pm = datetime(now.year, now.month, now.day, 10, 30, 0)  # Set the time to 9 PM
 
     # Calculate the time difference in milliseconds
-    time_difference = (nine_pm - now).total_seconds() * 1000 - timeZoneOffset
-    return get_lottery_time_left_in_millis() - timeZoneOffset > 0 and int(time_difference) < 0
+    time_difference = (nine_pm - now).total_seconds() * 1000
+    return get_lottery_time_left_in_millis() > 0 and int(time_difference) < 0
     
 
 
