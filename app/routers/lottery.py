@@ -164,7 +164,7 @@ def modify_lottery_winner(winnerData : schemas.SetLotteryWinnerRequest, db: Sess
 # Prize Pool
 @router.get("/get_lottery_prizepool", response_model=List[schemas.LotteryPrize])
 def get_lottery_prizepool(db: Session = Depends(get_db)):
-    allPrize = db.query(models.LotteryPrize).all()
+    allPrize = db.query(models.LotteryPrize).order_by(models.LotteryPrize.rank_no).all()
 
     return allPrize
 
