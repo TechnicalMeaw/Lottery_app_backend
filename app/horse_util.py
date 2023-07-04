@@ -13,7 +13,7 @@ def get_lottery_time_left_in_millis():
     if now.minute % 2 == 0 or (now.minute % 2 == 1 and now.second < 30):
         current_match_end_time = datetime(now.year, now.month, now.day, now.hour, now.minute+1, 30)
 
-        if now.minute % 5 == 1:
+        if now.minute % 2 == 1:
             current_match_end_time = datetime(now.year, now.month, now.day, now.hour, now.minute, 30)
         
 
