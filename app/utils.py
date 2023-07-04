@@ -17,7 +17,7 @@ def verify(plain_password, hashed_password):
 
 def get_lottery_time_left_in_millis():
     now = datetime.now()
-    nine_pm = datetime(now.year, now.month, now.day+1, 2, 55, 0)  # Set the time to 9 PM
+    nine_pm = datetime(now.year, now.month, now.day, 20, 55, 0)  # Set the time to 9 PM
 
     # Calculate the time difference in milliseconds
     time_difference = (nine_pm - now).total_seconds() * 1000
@@ -28,7 +28,7 @@ def get_lottery_time_left_in_millis():
 def is_lottery_active(timeZoneOffset):
 
     now = datetime.now()
-    nine_pm = datetime(now.year, now.month, now.day, 10 + 6, 30, 0)  # Set the time to 9 PM
+    nine_pm = datetime(now.year, now.month, now.day, 10, 30, 0)  # Set the time to 9 PM
 
     # Calculate the time difference in milliseconds
     time_difference = (nine_pm - now).total_seconds() * 1000 - timeZoneOffset
@@ -61,7 +61,7 @@ def delete_prev_lottery_data(db: Session, timeZoneOffset):
     
     # db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day, 10 - totalHrsToDeduct, actualMin, actualSec)).delete(synchronize_session=False)
 
-    db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day, 10 + 6, 30, 0)).delete(synchronize_session=False)
+    db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day, 10, 30, 0)).delete(synchronize_session=False)
 
     db.commit()
 
