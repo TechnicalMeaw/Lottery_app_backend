@@ -98,6 +98,9 @@ def get_all_winners(db: Session = Depends(get_db)):
 
 @router.post("/set_lottery_winner", response_model=List[schemas.LotteryWinner])
 def set_winner(winnerData : schemas.SetLotteryWinnerRequest, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
+
+    utils.delete_prev_winner(db)
+
     prev_winner_rank = db.query(models.LotteryWinners).filter(models.LotteryWinners.position == winnerData.rank).first()
 
     if prev_winner_rank:
@@ -107,8 +110,7 @@ def set_winner(winnerData : schemas.SetLotteryWinnerRequest, db: Session = Depen
 
     if not lottery_participate:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lottery number does not exist")
-    
-    utils.delete_prev_winner()
+
     
     # prev_winner_entry = db.query(models.LotteryWinners).filter(models.LotteryWinners.user_id == lottery_participate.user_id).first()
 
