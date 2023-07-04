@@ -84,6 +84,7 @@ class LotteryWinners(Base):
     lottery_token_no = Column(Integer, primary_key= True, unique = True, nullable=False)
     position = Column(Integer, ForeignKey("lottery_prize.rank_no", ondelete="CASCADE"), unique = True, nullable=False)
     user_id =  Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable = False, unique = False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))
 
     user = relationship("User")
 

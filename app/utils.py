@@ -67,6 +67,14 @@ def delete_prev_lottery_data(db: Session, timeZoneOffset):
     db.commit()
 
 
+def delete_prev_winner(db: Session):
+    now = datetime.now()
+
+    db.query(models.LotteryWinners).filter(models.LotteryWinners.created_at < datetime(now.year, now.month, now.day, 6, 0, 0)).delete(synchronize_session=False)
+
+    db.commit() 
+
+
 def split_phone_number(phone_number):
     pattern = r'^(\+\d{1,3})(\d{10})$'
     match = re.match(pattern, phone_number)

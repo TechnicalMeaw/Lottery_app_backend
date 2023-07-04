@@ -108,6 +108,8 @@ def set_winner(winnerData : schemas.SetLotteryWinnerRequest, db: Session = Depen
     if not lottery_participate:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lottery number does not exist")
     
+    utils.delete_prev_winner()
+    
     # prev_winner_entry = db.query(models.LotteryWinners).filter(models.LotteryWinners.user_id == lottery_participate.user_id).first()
 
     # if prev_winner_entry:
