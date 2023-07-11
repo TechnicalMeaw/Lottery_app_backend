@@ -5,6 +5,7 @@ from ..database import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import cast
 from sqlalchemy import String
+from datetime import datetime
 
 router = APIRouter(
     prefix= "/lottery",
@@ -55,7 +56,9 @@ def buy_lottery(lotteryBuyData : schemas.BuyLotteryRequest, db: Session = Depend
 def get_all_participants(db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user), 
                          pageNo : int = 1, search: Optional[str] = ""):
     
-    user_entries = db.query(models.Lottery).filter(cast(models.Lottery.lottery_token, String).contains(search)).order_by(models.Lottery.lottery_token).limit(10).offset((pageNo-1)*10).all()
+    now = datetime.now()
+    
+    user_entries = db.query(models.Lottery).filter(cast(models.Lottery.lottery_token, String).filter(models.Lottery.created_at > datetime(now.year, now.month, now.day - 1, 18, 0, 0)).contains(search)).order_by(models.Lottery.lottery_token).limit(10).offset((pageNo-1)*10).all()
 
     if not user_entries or len(user_entries) == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Entries not found")
@@ -68,8 +71,9 @@ def get_all_participants(db: Session = Depends(get_db), current_user : models.Us
 
 @router.get("/get_all_my_entries", response_model=List[schemas.LotteryOutResponse])
 def get_my_entries(db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user), search: Optional[str] = ""):
+    now = datetime.now()
     
-    user_entries = db.query(models.Lottery).filter(models.Lottery.user_id == current_user.id).filter(cast(models.Lottery.lottery_token, String).contains(search)).order_by(0 - models.Lottery.lottery_token).all()
+    user_entries = db.query(models.Lottery).filter(models.Lottery.user_id == current_user.id).filter(cast(models.Lottery.lottery_token, String).filter(models.Lottery.created_at > datetime(now.year, now.month, now.day - 1, 18, 0, 0)).contains(search)).order_by(0 - models.Lottery.lottery_token).all()
 
     if not user_entries or len(user_entries) == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No entries found")
