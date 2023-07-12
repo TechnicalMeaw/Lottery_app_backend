@@ -72,10 +72,10 @@ def delete_prev_lottery_data(db: Session, timeZoneOffset):
     
     # db.query(models.Lottery).filter(models.Lottery.created_at < datetime(now.year, now.month, now.day, 10 - totalHrsToDeduct, actualMin, actualSec)).delete(synchronize_session=False)
 
-    twelve_am = datetime(now.year, now.month, now.day - 1, 18, 0, 0)   # Set the time to 12:00 AM
+    twelve_am = datetime(now.year, now.month, now.day, 18, 0, 0)   # Set the time to 12:00 AM
 
-    if (twelve_am - now).total_seconds() < 0:
-        twelve_am = datetime(now.year, now.month, now.day, 18, 0, 0)
+    if (twelve_am - now).total_seconds() > 0:
+        twelve_am = datetime(now.year, now.month, now.day - 1 , 18, 0, 0)
 
 
 
@@ -89,7 +89,7 @@ def delete_prev_winner(db: Session):
 
     twelve_am = datetime(now.year, now.month, now.day, 18, 0, 0)   # Set the time to 12:00 AM
 
-    if (twelve_am - now).total_seconds() < 0:
+    if (twelve_am - now).total_seconds() > 0:
         twelve_am = datetime(now.year, now.month, now.day - 1 , 18, 0, 0)
 
     db.query(models.LotteryWinners).filter(models.LotteryWinners.created_at < twelve_am).delete(synchronize_session=False)

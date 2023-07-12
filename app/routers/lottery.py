@@ -57,10 +57,10 @@ def get_all_participants(db: Session = Depends(get_db), current_user : models.Us
                          pageNo : int = 1, search: Optional[str] = ""):
     
     now = datetime.now()
-    twelve_am = datetime(now.year, now.month, now.day - 1, 18, 0, 0)   # Set the time to 12:00 AM
+    twelve_am = datetime(now.year, now.month, now.day, 18, 0, 0)   # Set the time to 12:00 AM
 
-    if (twelve_am - now).total_seconds() < 0:
-        twelve_am = datetime(now.year, now.month, now.day, 18, 0, 0)
+    if (twelve_am - now).total_seconds() > 0:
+        twelve_am = datetime(now.year, now.month, now.day - 1 , 18, 0, 0)
     
     user_entries = db.query(models.Lottery).filter(models.Lottery.created_at > twelve_am).filter(cast(models.Lottery.lottery_token, String).contains(search)).order_by(models.Lottery.lottery_token).limit(10).offset((pageNo-1)*10).all()
 
@@ -78,10 +78,11 @@ def get_my_entries(db: Session = Depends(get_db), current_user : models.User = D
 
     now = datetime.now()
 
-    twelve_am = datetime(now.year, now.month, now.day - 1, 18, 0, 0)   # Set the time to 12:00 AM
+    twelve_am = datetime(now.year, now.month, now.day, 18, 0, 0)   # Set the time to 12:00 AM
 
-    if (twelve_am - now).total_seconds() < 0:
-        twelve_am = datetime(now.year, now.month, now.day, 18, 0, 0)
+    if (twelve_am - now).total_seconds() > 0:
+        twelve_am = datetime(now.year, now.month, now.day - 1 , 18, 0, 0)
+
     
     user_entries = db.query(models.Lottery).filter(models.Lottery.user_id == current_user.id).filter(models.Lottery.created_at > - twelve_am).filter(cast(models.Lottery.lottery_token, String).contains(search)).order_by(0 - models.Lottery.lottery_token).all()
 
