@@ -84,7 +84,7 @@ def get_my_entries(db: Session = Depends(get_db), current_user : models.User = D
         twelve_am = datetime(now.year, now.month, now.day - 1 , 18, 0, 0)
 
     
-    user_entries = db.query(models.Lottery).filter(models.Lottery.user_id == current_user.id).filter(models.Lottery.created_at > - twelve_am).filter(cast(models.Lottery.lottery_token, String).contains(search)).order_by(0 - models.Lottery.lottery_token).all()
+    user_entries = db.query(models.Lottery).filter(models.Lottery.user_id == current_user.id).filter(models.Lottery.created_at > twelve_am).filter(cast(models.Lottery.lottery_token, String).contains(search)).order_by(0 - models.Lottery.lottery_token).all()
 
     if not user_entries or len(user_entries) == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No entries found")
