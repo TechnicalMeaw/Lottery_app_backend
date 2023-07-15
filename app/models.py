@@ -85,6 +85,7 @@ class LotteryWinners(Base):
     position = Column(Integer, ForeignKey("lottery_prize.rank_no", ondelete="CASCADE"), unique = True, nullable=False)
     user_id =  Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable = False, unique = False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))
+    is_amount_credited = Column(Boolean, nullable = False, server_default=TextClause("False"))
 
     user = relationship("User")
 
@@ -134,4 +135,14 @@ class LotteryNoticeBoard(Base):
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     notice_text = Column(String, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))
+
+
+class NoticeBoard(Base):
+    __tablename__ = "all_notice"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    notice_text = Column(String, nullable=False)
+    # 1 for dashboard
+    notice_type = Column(Integer, nullable = False, server_default=TextClause("1"))
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))

@@ -1,5 +1,7 @@
 from typing import Optional, List
 from fastapi import status, HTTPException, Depends, APIRouter
+
+from app.routers.coins import update_coin
 from .. import models, schemas, utils, oauth2
 from ..database import get_db
 from sqlalchemy.orm import Session
@@ -108,6 +110,17 @@ def get_time_left_in_millis(db: Session = Depends(get_db), current_user : models
 def get_all_winners(db: Session = Depends(get_db)):
     all_winners = db.query(models.LotteryWinners).order_by(0 - models.LotteryWinners.position).all()
 
+    # if utils.get_lottery_time_left_in_millis() + 300000 < 0: # if lottery ended (9PM)
+    if True:
+        for winner in all_winners:
+            if not winner.is_amount_credited:
+                # Get winning prize
+                prize_money = db.query(models.LotteryPrize).filter(winner.position == models.LotteryPrize.rank_no).first()
+                # Add coin balance
+                winning_user = db.query(models.User).filter(models.User.id == winner.user_id).first()
+                update_coin(schemas.CoinUpdateRequest(coins=prize_money.prize_money, updation_type="add"), db, winning_user)
+                winner.is_amount_credited = True
+    db.commit()
     return all_winners
 
 

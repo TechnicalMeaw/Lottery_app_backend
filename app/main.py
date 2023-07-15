@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from . import models
 from .database import engine
-from .routers import user, auth, coins, transactions, lottery, withdraw, refferals, horse_race, lucky_draw
+from .routers import user, auth, coins, transactions, lottery, withdraw, refferals, horse_race, lucky_draw, notice_board
 
 
 # models.Base.metadata.create_all(bind=engine)
@@ -17,3 +17,4 @@ app.include_router(lottery.router)
 app.include_router(withdraw.router)
 app.include_router(refferals.router)
 app.include_router(horse_race.router)
+app.include_router(notice_board.router)
