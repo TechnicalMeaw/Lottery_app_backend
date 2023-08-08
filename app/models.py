@@ -146,3 +146,12 @@ class NoticeBoard(Base):
     # 1 for dashboard
     notice_type = Column(Integer, nullable = False, server_default=TextClause("1"))
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))
+
+
+class JhandiMundaBids(Base):
+    __tablename__ = "jhandi_munda_bids"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable = False)
+    card_id = Column(Integer, nullable=False)
+    bid_amount = Column(Integer, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=TextClause("Now()"))

@@ -297,3 +297,33 @@ class LotteryNoticeRequestResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class JhandiMundaTiming(BaseModel):
+
+    is_jhandi_munda_slot_open : bool
+    remaining_time_in_millis : int
+
+
+class JhandiMundaBidRequestModel(BaseModel):
+    bid_card_id : int
+    bid_amount : int
+
+
+class JhandiMundaWinnerDetailsResponseModel(BaseModel):
+    winnig_card_id : int
+    is_user_winner : bool
+    total_bid_money : int
+    bid_on_winning_card : int = 0
+    win_money : int = 0
+
+    class Config:
+        orm_mode = True
+
+
+class JhandiMundaMyBidsResponseModel(BaseModel):
+    card_id : int
+    bid_amount : int
+
+    class Config:
+        orm_mode = True
