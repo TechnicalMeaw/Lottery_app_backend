@@ -95,6 +95,6 @@ def get_my_bids(db: Session = Depends(get_db), current_user : models.User = Depe
     if not slot.is_jhandi_munda_slot_open:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You have no active bids")
 
-    my_bids = db.query(models.JhandiMundaBids.horse_id.label("card_id"), func.sum(models.JhandiMundaBids.bid_amount).label("bid_amount")).filter(models.JhandiMundaBids.user_id == current_user.id).group_by(models.JhandiMundaBids.card_id).order_by(models.JhandiMundaBids.card_id).all()
+    my_bids = db.query(models.JhandiMundaBids.card_id.label("card_id"), func.sum(models.JhandiMundaBids.bid_amount).label("bid_amount")).filter(models.JhandiMundaBids.user_id == current_user.id).group_by(models.JhandiMundaBids.card_id).order_by(models.JhandiMundaBids.card_id).all()
 
     return my_bids
