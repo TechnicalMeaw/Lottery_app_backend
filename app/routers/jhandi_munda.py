@@ -14,8 +14,11 @@ router = APIRouter(
 
 
 @router.get("/get_time_slot", response_model= schemas.JhandiMundaTiming)
-def get_slot_details():
-    return jm_util.get_jm_time_slot()
+def get_slot_details(db: Session = Depends(get_db)):
+    slot = jm_util.get_jm_time_slot()
+    if slot.is_jhandi_munda_slot_open:
+        jm_util.delete_prev_slot_data(db)
+    return slot
 
 
 
